@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Aditya Portfolio",
+  "description": "Cinematic and fully animated developer portfolio of Aditya, featuring ElevenLabs-style voice-synthesizer opening and high-end tech-stack dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
