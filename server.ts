@@ -187,7 +187,7 @@ const FALLBACK_STATS: DeveloperMetrics = {
     username: "aditya-singh-18",
     repos: 42,
     followers: 12,
-    contributions: 1438,
+    contributions: 0,
   },
   leetcode: {
     username: "adityasingh_18",
@@ -241,6 +241,18 @@ const FALLBACK_STATS: DeveloperMetrics = {
   source: "fallback" // Secure explicit fallback source descriptor tag
 };
 
+function normalizeContributionFallback(stats: DeveloperMetrics): DeveloperMetrics {
+  const normalized = JSON.parse(JSON.stringify(stats)) as DeveloperMetrics;
+  const github = normalized.github;
+  const isPlaceholderContributionCount = github.contributions === 1438 || github.contributions === 167;
+
+  if (normalized.source === "fallback" || (isPlaceholderContributionCount && github.repos === 42 && github.followers === 12)) {
+    github.contributions = 0;
+  }
+
+  return normalized;
+}
+
 const DB_DIR = path.join(process.cwd(), "data");
 const METRICS_CACHE_PATH = path.join(DB_DIR, "developer_metrics.json");
 
@@ -251,7 +263,7 @@ function loadMetricsFromPersistence(): DeveloperMetrics | null {
       const parsed = JSON.parse(data) as DeveloperMetrics;
       if (parsed && parsed.github && parsed.leetcode) {
         console.info("[CACHE] Successfully loaded persisted metrics cache from file on startup.");
-        return parsed;
+        return normalizeContributionFallback(parsed);
       }
     }
   } catch (err) {

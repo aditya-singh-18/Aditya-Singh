@@ -14,7 +14,7 @@ const DEFAULT_INITIAL_STATS: HeroStats = {
   github: {
     repos: 42,
     followers: 12,
-    contributions: 1438,
+    contributions: 0,
   },
   leetcode: {
     solved: 289,
@@ -39,12 +39,26 @@ const DEFAULT_INITIAL_STATS: HeroStats = {
   source: "fallback"
 };
 
+const isPlaceholderGithubStats = (stats: HeroStats["github"] | undefined) => {
+  if (!stats) return false;
+
+  const placeholderContributionCounts = new Set([1438, 167]);
+  return (
+    placeholderContributionCounts.has(stats.contributions ?? 0) &&
+    stats.repos === 42 &&
+    stats.followers === 12
+  );
+};
+
 const getInitialStats = (): HeroStats => {
   try {
     const cached = localStorage.getItem("aditya_portfolio_cached_stats");
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (parsed && typeof parsed === "object" && parsed.leetcode && parsed.github) {
+      const parsedSource = typeof parsed?.source === "string" ? parsed.source : undefined;
+      const looksLikeFallbackCache = parsedSource === "fallback" || (!parsedSource && isPlaceholderGithubStats(parsed?.github));
+
+      if (parsed && typeof parsed === "object" && parsed.leetcode && parsed.github && !looksLikeFallbackCache) {
         return parsed;
       }
     }
